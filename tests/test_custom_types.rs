@@ -23,10 +23,10 @@ impl CustomList {
         self.items.len()
     }
 
-    fn __getitem__(&self, idx: isize) -> PyResult<PyObject> {
+    fn __getitem__(&self, idx: isize, py: Python) -> PyResult<PyObject> {
         self.items
             .get(idx as usize)
-            .cloned()
+            .map(|v| v.into_py(py))
             .ok_or_else(|| PyIndexError::new_err(idx))
     }
 }
@@ -86,10 +86,10 @@ impl CustomDict {
         self.items.len()
     }
 
-    fn __getitem__(&self, key: String) -> PyResult<PyObject> {
+    fn __getitem__(&self, key: String, py: Python) -> PyResult<PyObject> {
         self.items
             .get(&key)
-            .cloned()
+            .map(|v| v.into_py(py))
             .ok_or_else(|| PyKeyError::new_err(key))
     }
 
@@ -101,8 +101,8 @@ impl CustomDict {
         self.items.keys().collect()
     }
 
-    fn values(&self) -> Vec<PyObject> {
-        self.items.values().cloned().collect()
+    fn values(&self, py: Python) -> Vec<PyObject> {
+        self.items.values().map(|v| v.into_py(py)).collect()
     }
 }
 
